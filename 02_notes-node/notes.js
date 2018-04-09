@@ -2,29 +2,33 @@ console.log('Starting notes.js');
 
 const fs = require('fs');
 
+var fetchNotes = () => {
+  try {
+    var notesString = fs.readFileSync('notes-data.json');
+    return JSON.parse(notesString);
+  } catch (e) {
+    return [];
+  }
+};
+
+var saveNotes = (notes) => {
+  fs.writeFileSync('notes-data.json', JSON.stringify(notes));
+};
+
 var addNote = (title, body) => {
-  var notes = [];
+  var notes = fetchNotes();
   var note = {
     title,
     body
   };
 
-  try {
-    var notesString = fs.readFileSync('notes-data.json');
-    notes = JSON.parse(notesString);
-  } catch (e) {
-
-  }
-
   var duplicateNotes = notes.filter( (note) => note.title === title );
-
   if(duplicateNotes.length === 0){
     notes.push(note);
-    fs.writeFileSync('notes-data.json', JSON.stringify(notes));
+    saveNotes(notes);
+    return note;
   }
-  else {
-    console.log('duplicate note');
-  }
+
 };
 
 var getAll = () => {
@@ -36,7 +40,22 @@ var getNote = (title) => {
 };
 
 var removeNote = (title) => {
-  console.log('Removing note called', title);
+
+  var notes = fetchNotes();
+  var index = notes.findIndex( (note) => note.title === title );
+
+  if(index != -1) {
+    var note = notes.splice(index, 1);
+    console.log(note);
+    console.log('note deleted');
+    console.log('--');
+    console.log(`Title: ${note[0].title}`);
+    console.log(`Body: ${note[0].body}`);
+    saveNotes(notes);
+  } else {
+    console.log('note does not exist');
+  }
+
 };
 
 module.exports = {
