@@ -1,4 +1,3 @@
-console.log('Starting notes.js');
 
 const fs = require('fs');
 
@@ -13,6 +12,13 @@ var fetchNotes = () => {
 
 var saveNotes = (notes) => {
   fs.writeFileSync('notes-data.json', JSON.stringify(notes));
+};
+
+var logNote = (note) => {
+  debugger;
+  console.log('--');
+  console.log(`Title: ${note.title}`);
+  console.log(`Body: ${note.body}`);
 };
 
 var addNote = (title, body) => {
@@ -32,35 +38,26 @@ var addNote = (title, body) => {
 };
 
 var getAll = () => {
-  console.log('Getting all notes');
+  return fetchNotes();
 };
 
 var getNote = (title) => {
-  console.log('Getting note called', title);
+  var notes = fetchNotes();
+  var note = notes.filter( (note) => note.title === title );
+  return note[0];
 };
 
 var removeNote = (title) => {
-
   var notes = fetchNotes();
-  var index = notes.findIndex( (note) => note.title === title );
-
-  if(index != -1) {
-    var note = notes.splice(index, 1);
-    console.log(note);
-    console.log('note deleted');
-    console.log('--');
-    console.log(`Title: ${note[0].title}`);
-    console.log(`Body: ${note[0].body}`);
-    saveNotes(notes);
-  } else {
-    console.log('note does not exist');
-  }
-
+  var filteredNotes = notes.filter( (note) => note.title !== title );
+  saveNotes(filteredNotes);
+  return filteredNotes.length !== notes.length;
 };
 
 module.exports = {
   addNote,
   getAll,
   getNote,
-  removeNote
+  removeNote,
+  logNote
 };
